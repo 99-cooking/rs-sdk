@@ -1,0 +1,18 @@
+.git/
+**/node_modules/
+
+# Dev/test files
+scripts/
+bot_arcs/
+bots/
+runs/
+docs/
+*.log
+**/.DS_Store
+
+# Large files not needed for production
+server/engine/screenshots/
+
+# Non-server directories not needed
+learnings/
+mcp/

@@ -2,6 +2,6 @@
   "$schema": "https://railway.com/railway.schema.json",
   "build": {
     "dockerfilePath": "server/Dockerfile",
-    "dockerContext": "server"
+    "dockerContext": "."
   }
 }
