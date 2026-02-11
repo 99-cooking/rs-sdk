@@ -1,129 +1,160 @@
-# RS-SDK (99 Cooking Fork)
+```
+    ██╗      ██████╗  ██████╗ ████████╗   ██╗  ██╗██╗   ██╗███████╗
+    ██║     ██╔═══██╗██╔═══██╗╚══██╔══╝   ╚██╗██╔╝╚██╗ ██╔╝╚══███╔╝
+    ██║     ██║   ██║██║   ██║   ██║       ╚███╔╝  ╚████╔╝   ███╔╝ 
+    ██║     ██║   ██║██║   ██║   ██║       ██╔██╗   ╚██╔╝   ███╔╝  
+    ███████╗╚██████╔╝╚██████╔╝   ██║   ██╗██╔╝ ██╗   ██║   ███████╗
+    ╚══════╝ ╚═════╝  ╚═════╝    ╚═╝   ╚═╝╚═╝  ╚═╝   ╚═╝   ╚══════╝
+```
 
-> 🦞 **This is 99 Cooking's fork** — running on Railway at `rs-server-production.up.railway.app`
-> 
-> Original repo: [MaxBittker/rs-sdk](https://github.com/MaxBittker/rs-sdk)
+# 🦞 loot.xyz
 
-Research-oriented starter kit for runescape-style bots, including a typescript sdk, agent documentation and bindings, and a server emulator. Works out of the box - tell it what to automate! 
+**A RuneScape 2004 private server** — Experience the golden age of Gielinor.
 
-<div align="center">
-    <img src="server/content/title/promo.gif" alt="RS-SDK Demo" width="800">
-</div>
+🎮 **Play Now:** https://loot.xyz  
+🤖 **Bot SDK:** https://github.com/99-cooking/rs-sdk  
+📊 **Hiscores:** https://loot.xyz/hiscores
 
-[![Discord](server/content/title/discord.svg)](https://discord.gg/3DcuU5cMJN)
-[![Hiscores](server/content/title/hiscores.svg)](https://rs-server-production.up.railway.app/hiscores)
+---
 
-Build and operate bots within a complex economic role-playing MMO. You can automate the game, level an account to all 99s, and experiment with agentic development techniques within a safe, bot-only setting.
+## ✨ Features
 
-The goals of this project are to provide a rich testing environment for goal-directed program synthesis techniques (Ralph loops, etc), and to facilitate research into collaboration and competition between agents.
+- **25x XP Rates** — Level up fast, perfect for experiments
+- **All Members Content** — P2P areas and skills unlocked for everyone
+- **Bot-Friendly** — Full SDK support for automation and AI agents
+- **2004 Authentic** — The real RuneScape experience, pre-GE era
+- **Web Client** — Play directly in your browser, no download needed
 
-![Task Length Distribution](server/content/title/task_length.svg)
+---
 
-There is currently a [leaderboard](https://rs-server-production.up.railway.app/hiscores) for bots running on the demo server, with rankings based on highest total level per lowest account playtime.
+## 🎮 How to Play
 
-> [!NOTE]
-> RS-SDK is a fork of the LostCity engine/client, an amazing project without which rs-sdk would not be possible. 
-> Find their [code here](https://github.com/LostCityRS/Server) or read their [history and ethos](https://lostcity.rs/t/faq-what-is-lost-city/16)
-## Getting Started:
-```sh
+1. Visit https://loot.xyz
+2. Click **Register** to create an account (or just log in with a new username)
+3. Click **Play Now** to launch the web client
+4. Enter your credentials and start your adventure!
+
+---
+
+## 🤖 Bot Development
+
+Want to automate your grind? Clone our SDK:
+
+```bash
 git clone https://github.com/99-cooking/rs-sdk.git
+cd rs-sdk && bun install
+
+# Create a new bot
+bun scripts/create-bot.ts mybot
+
+# Run your bot
+bun bots/mybot/script.ts
 ```
 
-Out of the box, you can connect to the provided demo server, choose a name that is not already taken!
+The SDK connects to loot.xyz by default and provides:
+- Full game state access (inventory, skills, map, NPCs)
+- Action primitives (walk, click, interact)
+- Pathfinding utilities
+- Tutorial Island auto-skip
 
-With claude code:
-```sh
+See the [SDK documentation](https://github.com/99-cooking/rs-sdk) for more details.
+
+---
+
+## 🏗️ Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                      loot.xyz                           │
+├─────────────────────────────────────────────────────────┤
+│  Engine (Port 8080)     │  Gateway (Port 7780)          │
+│  ├─ Game simulation     │  ├─ WebSocket bridge          │
+│  ├─ Web client serving  │  ├─ Bot state management      │
+│  ├─ Hiscores            │  └─ SDK ↔ Browser relay       │
+│  ├─ Registration        │                               │
+│  └─ REST APIs           │                               │
+├─────────────────────────────────────────────────────────┤
+│  Data (Volume)                                          │
+│  ├─ db.sqlite (accounts, hiscores)                      │
+│  └─ players/ (save files)                               │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Endpoints:**
+| Path | Description |
+|------|-------------|
+| `/` | Homepage |
+| `/register` | Account registration |
+| `/rs2.cgi` | Web game client |
+| `/bot?bot=NAME&password=PASS` | Bot client (headless-friendly) |
+| `/hiscores` | Player rankings |
+| `/gateway` | WebSocket for SDK |
+| `/status` | Bot status API |
+| `/playercount` | Online player count |
+
+---
+
+## 🚀 Self-Hosting
+
+### Prerequisites
+- [Bun](https://bun.sh) v1.0+
+- Node.js 18+ (for some dependencies)
+
+### Local Development
+
+```bash
+# Clone the repo
+git clone https://github.com/99-cooking/loot.xyz.git
+cd loot.xyz
+
+# Install dependencies
 bun install
-claude "start a new bot with name: {username}"
-```
-Manually:
-```sh
-bun install
-bun scripts/create-bot.ts {username}
-bun bots/{username}/script.ts 
+
+# Start the server
+bun start.ts
 ```
 
-Chat is off by default to prevent scamming and prompt injection attacks, but you can opt in  with `SHOW_CHAT=true` in the bot.env file
+The server will be available at `http://localhost:8080`.
 
-Warning: The demo server is offered as a convenience, and we do not guarantee uptime or data persistence. Hold your accounts lightly, and consider hosting your own server instance. Please do not manually play on the demo server. 
+### Deploy to Railway
 
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/loot-xyz)
 
+1. Connect your GitHub repo
+2. Add a volume mounted at `/opt/server/data`
+3. Set `PORT=8080`
+4. Deploy!
 
+---
 
-## Gameplay Modifications
+## 🎮 Server Features
 
-This server has a few modifications from the original game to make development and bot testing easier:
+This server has modifications from the original game for development and bot testing:
 
-- **Faster leveling** - The XP curve is accelerated and less steep.
-- **Infinite run energy** - Players never run out of energy 
-- **No random events** - Anti-botting random events are disabled 
+- **Faster leveling** — 25x XP rates, accelerated progression
+- **Infinite run energy** — Players never tire
+- **No random events** — Anti-botting events disabled
+- **All members content** — Full P2P access for everyone
 
+---
 
-## Architecture:
+## 🙏 Credits
 
-rs-sdk runs against an enhanced web-based client (`botclient`) which connects to the LostCity 2004scape server emulator.
+This project is built on the shoulders of giants:
 
-There is a gateway server which accepts connections from botclient and SDK instances, and forwards messages between them based on username.
-Once connected to the gateway, the botclient will relay game state to the SDK, and execute low-level actions (e.g. `walkTo(x,y)`) sent from the SDK through the gateway.
+- **[LostCity/Server](https://github.com/LostCityRS/Server)** — The incredible open-source RS2 server emulator
+- **[rs-sdk](https://github.com/MaxBittker/rs-sdk)** — Bot SDK by Max Bittker
+- **[2004scape](https://2004scape.org)** — Inspiration and community
 
-This means that the SDK can't talk directly to the game server, but must go through the botclient. It will attempt to launch the botclient on startup if one is not already running. 
+---
 
-You don't need to run the gateway/botclient in order to run automations against the demo server, but you may choose to if you are fixing bugs or adding features to the rs-sdk project
+## 📜 Legal
 
+This is a fan project for educational and preservation purposes. Not affiliated with or endorsed by Jagex Ltd. RuneScape is a registered trademark of Jagex Ltd.
 
-## Running the server locally
+---
 
-Running the server locally has many advantages, primary being the ability to set a high tickrate. 
-
-You can set tickrate in `server/engine/.env` via the `TICK_RATE` variable (default is 600ms, try 200ms or 30ms for faster gameplay, especially useful for headless testing).
-
-You want all three of these running: 
-
-```sh
-# Game engine
-cd server/engine && bun run start
-```
-```sh
-# Web client bundler
-cd server/webclient && bun run watch
-```
-```sh
-# Gateway (bridges SDK <-> bot client)
-cd server/gateway && bun run gateway
-```
-
-The gateway listens on `ws://localhost:7780` by default (configurable via `AGENT_PORT` env var).
-
-
-### 2. Connect a bot to the local gateway
-
-The `SERVER` variable in `bot.env` controls where the bot connects. To use your local gateway, **leave `SERVER` blank**:
-
-```bots/<botname>/bot.env
-BOT_USERNAME=mybot
-PASSWORD=test
-SERVER=
-SHOW_CHAT=false
-```
-
-When `SERVER` is empty, all connection paths (scripts, CLI, MCP) default to `ws://localhost:7780`.
-
-When `SERVER` is set to a hostname (e.g. `rs-server-production.up.railway.app`), they connect to `wss://{SERVER}/gateway` instead.
-
-
-
-## Disclaimer
-
-This is a free, open-source, community-run project.
-
-The goal is strictly education and scientific research.
-
-LostCity Server was written from scratch after many hours of research and peer review. Everything you see is completely and transparently open source.
-
-We have not been endorsed by, authorized by, or officially communicated with Jagex Ltd. on our efforts here.
-
-You cannot play Old School RuneScape here, buy RuneScape gold, or access any of the official game's services! Bots developed here will not work on the official game servers.
-
-
-## License
-This project is licensed under the [MIT License](https://opensource.org/licenses/MIT). See the [LICENSE](LICENSE) file for details.
+<p align="center">
+  <b>Made with 🦞 by <a href="https://github.com/99-cooking">99 Cooking</a></b><br>
+  <i>Est. 2026 — Cooking lobsters since Tutorial Island</i>
+</p>
