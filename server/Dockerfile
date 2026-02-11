@@ -2,9 +2,7 @@
 FROM oven/bun:debian
 
 # Install system deps with cache mount
-RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,id=apt-lib,target=/var/lib/apt,sharing=locked \
-    apt update && apt install -y --no-install-recommends \
+RUN apt update && apt install -y --no-install-recommends \
     default-jdk git ca-certificates bash sqlite3
 
 WORKDIR /opt/server
@@ -15,15 +13,13 @@ WORKDIR /opt/server
 COPY engine/package.json engine/bun.lock /opt/server/engine/
 COPY gateway/package.json gateway/bun.lock /opt/server/gateway/
 
-# Install engine deps with bun cache mount
+# Install engine deps
 WORKDIR /opt/server/engine
-RUN --mount=type=cache,id=bun-cache,target=/root/.bun/install/cache \
-    bun install
+RUN bun install
 
-# Install gateway deps with bun cache mount
+# Install gateway deps
 WORKDIR /opt/server/gateway
-RUN --mount=type=cache,id=bun-cache,target=/root/.bun/install/cache \
-    bun install
+RUN bun install
 
 # === SOURCE LAYER (rebuilds on code changes, but deps cached) ===
 
