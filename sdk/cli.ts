@@ -26,7 +26,7 @@ Usage:
   bun --env-file=bots/<name>/bot.env sdk/cli.ts
 
 Options:
-  --server <host>   Server hostname (default: from bot.env or rs-sdk-demo.fly.dev)
+  --server <host>   Server hostname (default: from bot.env or rs-server-production.up.railway.app)
   --timeout <ms>    Connection timeout in ms (default: 5000)
   --help            Show this help
 
@@ -106,7 +106,7 @@ async function main() {
     }
 
     // Default server if not set
-    if (!server) server = 'rs-sdk-demo.fly.dev';
+    if (!server) server = 'rs-server-production.up.railway.app';
 
     const isLocal = server === 'localhost' || server.startsWith('localhost:');
 

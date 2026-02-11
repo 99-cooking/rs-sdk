@@ -1,4 +1,8 @@
-# RS-SDK
+# RS-SDK (99 Cooking Fork)
+
+> 🦞 **This is 99 Cooking's fork** — running on Railway at `rs-server-production.up.railway.app`
+> 
+> Original repo: [MaxBittker/rs-sdk](https://github.com/MaxBittker/rs-sdk)
 
 Research-oriented starter kit for runescape-style bots, including a typescript sdk, agent documentation and bindings, and a server emulator. Works out of the box - tell it what to automate! 
 
@@ -7,7 +11,7 @@ Research-oriented starter kit for runescape-style bots, including a typescript s
 </div>
 
 [![Discord](server/content/title/discord.svg)](https://discord.gg/3DcuU5cMJN)
-[![Hiscores](server/content/title/hiscores.svg)](https://rs-sdk-demo.fly.dev/hiscores)
+[![Hiscores](server/content/title/hiscores.svg)](https://rs-server-production.up.railway.app/hiscores)
 
 Build and operate bots within a complex economic role-playing MMO. You can automate the game, level an account to all 99s, and experiment with agentic development techniques within a safe, bot-only setting.
 
@@ -15,14 +19,14 @@ The goals of this project are to provide a rich testing environment for goal-dir
 
 ![Task Length Distribution](server/content/title/task_length.svg)
 
-There is currently a [leaderboard](https://rs-sdk-demo.fly.dev/hiscores) for bots running on the demo server, with rankings based on highest total level per lowest account playtime.
+There is currently a [leaderboard](https://rs-server-production.up.railway.app/hiscores) for bots running on the demo server, with rankings based on highest total level per lowest account playtime.
 
 > [!NOTE]
 > RS-SDK is a fork of the LostCity engine/client, an amazing project without which rs-sdk would not be possible. 
 > Find their [code here](https://github.com/LostCityRS/Server) or read their [history and ethos](https://lostcity.rs/t/faq-what-is-lost-city/16)
 ## Getting Started:
 ```sh
-git clone https://github.com/MaxBittker/rs-sdk.git
+git clone https://github.com/99-cooking/rs-sdk.git
 ```
 
 Out of the box, you can connect to the provided demo server, choose a name that is not already taken!
@@ -104,7 +108,7 @@ SHOW_CHAT=false
 
 When `SERVER` is empty, all connection paths (scripts, CLI, MCP) default to `ws://localhost:7780`.
 
-When `SERVER` is set to a hostname (e.g. `rs-sdk-demo.fly.dev`), they connect to `wss://{SERVER}/gateway` instead.
+When `SERVER` is set to a hostname (e.g. `rs-server-production.up.railway.app`), they connect to `wss://{SERVER}/gateway` instead.
 
 
 
