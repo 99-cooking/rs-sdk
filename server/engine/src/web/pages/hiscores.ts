@@ -128,7 +128,7 @@ function skillSidebar(currentCategory: number, profile: string): string {
             </div>
             <ul class="hs-skill-list">
                 ${links}
-                <li class="hs-special"><a href="/hiscores/outfit?profile=${profile}">⚔️ Equipment</a></li>
+                <li class="hs-special"><a href="/hiscores/outfit?profile=${profile}">Equipment</a></li>
             </ul>
         </div>
     `;
@@ -366,7 +366,7 @@ export async function handleHiscoresPage(url: URL): Promise<Response | null> {
     const content = `
     ${HISCORES_EXTRA_STYLES}
     <div style="text-align:center; margin-bottom: 20px;">
-        <h2 style="color: #ffd700; font-size: 1.5em;">🏆 ${selectedSkill} Hiscores</h2>
+        <h2 style="color: #ffd700; font-size: 1.5em;">${selectedSkill} Hiscores</h2>
     </div>
 
     <div class="hs-profile-select">
@@ -488,7 +488,7 @@ export async function handleHiscoresOutfitPage(url: URL): Promise<Response | nul
     const content = `
     ${HISCORES_EXTRA_STYLES}
     <div style="text-align:center; margin-bottom: 20px;">
-        <h2 style="color: #ffd700; font-size: 1.5em;">⚔️ Equipment Hiscores</h2>
+        <h2 style="color: #ffd700; font-size: 1.5em;">Equipment Hiscores</h2>
     </div>
 
     <div class="hs-layout">

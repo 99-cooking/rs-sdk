@@ -31,7 +31,7 @@ export async function handleHomePage(url: URL): Promise<Response | null> {
 
     const content = `
     <div style="text-align: center; margin-bottom: 40px;">
-        <a href="/rs2.cgi" class="btn btn-play">▶ Play Now</a>
+        <a href="/play" class="btn btn-play">Play Now</a>
     </div>
 
     <div class="stats">
@@ -47,33 +47,33 @@ export async function handleHomePage(url: URL): Promise<Response | null> {
 
     <div class="features">
         <div class="feature">
-            <h3>⚡ 25x XP Rate</h3>
+            <h3>25x XP Rate</h3>
             <p>Level up faster than ever. Perfect for bot training experiments.</p>
         </div>
         <div class="feature">
-            <h3>🤖 Bot-Friendly</h3>
+            <h3>Bot-Friendly</h3>
             <p>Full SDK support for automation. Train your AI agents!</p>
         </div>
         <div class="feature">
-            <h3>🎮 2004 Authentic</h3>
+            <h3>2004 Authentic</h3>
             <p>Experience RuneScape as it was in 2004. Nostalgia included.</p>
         </div>
         <div class="feature">
-            <h3>👥 Members Content</h3>
+            <h3>Members Content</h3>
             <p>All members areas and skills unlocked for everyone.</p>
         </div>
     </div>
 
     <div class="card">
-        <h2>🚀 Quick Start</h2>
+        <h2>Quick Start</h2>
         <p>1. <a href="/register">Register an account</a> or create one when you first log in</p>
-        <p>2. <a href="/rs2.cgi">Launch the game client</a></p>
+        <p>2. <a href="/play">Launch the game client</a></p>
         <p>3. Enter your username and password</p>
         <p>4. Start your adventure!</p>
     </div>
 
     <div class="card">
-        <h2>🤖 For Bot Developers</h2>
+        <h2>For Bot Developers</h2>
         <p>Clone the SDK and start automating:</p>
         <pre>git clone ${GITHUB_URL}.git
 cd rs-sdk && bun install
@@ -144,9 +144,9 @@ export async function handleRegisterPage(req: Request, url: URL): Promise<Respon
 
     const content = `
     <div class="card" style="max-width: 500px; margin: 0 auto;">
-        <h2>📝 Create Account</h2>
-        ${error ? `<p class="error">❌ ${error}</p>` : ''}
-        ${success ? `<p class="success">✅ ${success}</p>` : ''}
+        <h2>Create Account</h2>
+        ${error ? `<p class="error">${error}</p>` : ''}
+        ${success ? `<p class="success">${success}</p>` : ''}
 
         <form method="POST" action="/register">
             <div class="form-group">
@@ -169,7 +169,7 @@ export async function handleRegisterPage(req: Request, url: URL): Promise<Respon
         </form>
 
         <p style="text-align: center; margin-top: 20px; color: #999;">
-            Already have an account? <a href="/rs2.cgi">Play Now</a>
+            Already have an account? <a href="/play">Play Now</a>
         </p>
     </div>
     `;

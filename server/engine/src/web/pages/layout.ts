@@ -145,14 +145,14 @@ export function layout(title: string, content: string, activePage: string = ''):
 </head>
 <body>
     <header>
-        <h1>🦞 loot.xyz</h1>
+        <h1>loot.xyz</h1>
         <p>A RuneScape 2004 Private Server</p>
     </header>
     <nav class="nav">
         <a href="/"${activePage === 'home' ? ' class="active"' : ''}>Home</a>
         <a href="/register"${activePage === 'register' ? ' class="active"' : ''}>Register</a>
         <a href="/hiscores"${activePage === 'hiscores' ? ' class="active"' : ''}>Hiscores</a>
-        <a href="/rs2.cgi"${activePage === 'play' ? ' class="active"' : ''}>Play Now</a>
+        <a href="/play"${activePage === 'play' ? ' class="active"' : ''}>Play</a>
     </nav>
     <div class="container">
         ${content}

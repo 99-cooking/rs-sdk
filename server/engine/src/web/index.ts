@@ -8,6 +8,7 @@ import { handleScreenshotsListPage, handleScreenshotFilePage } from './pages/scr
 import { handleScreenshotUpload, handleExportCollisionApi } from './pages/api.js';
 import { handleDisclaimerPage, handleMapviewPage, handlePublicFiles } from './pages/static.js';
 import { handleHomePage, handleRegisterPage } from './pages/register.js';
+import { handlePlayPage } from './pages/play.js';
 import { WebSocketData, handleWebSocketUpgrade, handleGatewayEndpointGet, websocketHandlers } from './websocket.js';
 
 export type { WebSocketData };
@@ -136,6 +137,10 @@ export async function startWeb() {
             // Registration page (/register)
             const registerResponse = await handleRegisterPage(req, url);
             if (registerResponse) return registerResponse;
+
+            // Play page (/play) - embedded client in layout
+            const playResponse = handlePlayPage(url);
+            if (playResponse) return playResponse;
 
             // Client pages (/bot, /rs2.cgi, /vanilla)
             const clientResponse = await handleClientPage(url);
