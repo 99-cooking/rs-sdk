@@ -45,22 +45,37 @@ export async function handleHomePage(url: URL): Promise<Response | null> {
         </div>
     </div>
 
-    <div class="features" style="grid-template-columns: repeat(2, 1fr); max-width: 700px; margin: 30px auto; gap: 14px;">
-        <div class="feature" style="padding: 18px;">
-            <h3 style="font-size: 0.95em; margin-bottom: 6px;">⚡ 25x XP Rate</h3>
-            <p style="font-size: 0.85em; margin: 0; color: #ccc;">Level up faster than ever. Perfect for bot training experiments.</p>
+    <div class="features">
+        <div class="feature">
+            <h3>25x XP Rate</h3>
+            <p>Level up faster than ever. Perfect for bot training experiments.</p>
         </div>
-        <div class="feature" style="padding: 18px;">
-            <h3 style="font-size: 0.95em; margin-bottom: 6px;">🤖 Bot-Friendly</h3>
-            <p style="font-size: 0.85em; margin: 0; color: #ccc;">Full SDK support for automation. Train your AI agents!</p>
+        <div class="feature">
+            <h3>Bot-Friendly</h3>
+            <p>Full SDK support for automation. Train your AI agents!</p>
         </div>
-        <div class="feature" style="padding: 18px;">
-            <h3 style="font-size: 0.95em; margin-bottom: 6px;">🏰 2004 Authentic Experience</h3>
-            <p style="font-size: 0.85em; margin: 0; color: #ccc;">RuneScape as it was in 2004. Nostalgia included.</p>
+        <div class="feature">
+            <h3>2004 Authentic</h3>
+            <p>Experience RuneScape as it was in 2004. Nostalgia included.</p>
         </div>
-        <div class="feature" style="padding: 18px;">
-            <h3 style="font-size: 0.95em; margin-bottom: 6px;">⭐ Members Content</h3>
-            <p style="font-size: 0.85em; margin: 0; color: #ccc;">All members areas and skills unlocked for everyone.</p>
+        <div class="feature">
+            <h3>Members Content</h3>
+            <p>All members areas and skills unlocked for everyone.</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Gameplay Modifications</h2>
+        <p style="color: #ccc; margin-bottom: 15px;">Custom changes active on this server:</p>
+        <div class="features" style="margin-top: 0;">
+            <div class="feature">
+                <h3>Infinite Run Energy</h3>
+                <p>Players never run out of energy. Sprint everywhere, all the time.</p>
+            </div>
+            <div class="feature">
+                <h3>No Random Events</h3>
+                <p>Anti-botting random events are disabled. No interruptions.</p>
+            </div>
         </div>
     </div>
 
