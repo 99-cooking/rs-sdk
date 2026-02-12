@@ -1,11 +1,12 @@
 /**
  * Homepage and registration for loot.xyz
+ * Dark blue/gold gradient design
  */
 
 import { db } from '#/db/query.js';
 import bcrypt from 'bcrypt';
 import World from '#/engine/World.js';
-import { rsLayout, GITHUB_URL } from './layout.js';
+import { layout, GITHUB_URL } from './layout.js';
 
 async function getStats(): Promise<{ players: number; accounts: number }> {
     try {
@@ -29,62 +30,62 @@ export async function handleHomePage(url: URL): Promise<Response | null> {
     const stats = await getStats();
 
     const content = `
-    <div style="text-align: center; padding: 15px 0;">
-        <a href="/rs2.cgi" class="rs-btn rs-btn-play">Play Now - It's Free!</a>
+    <div style="text-align: center; margin-bottom: 40px;">
+        <a href="/rs2.cgi" class="btn btn-play">▶ Play Now</a>
     </div>
 
-    <div class="rs-stats">
-        <div class="rs-stat">
-            <div class="rs-stat-value">${stats.players}</div>
-            <div class="rs-stat-label">Players Online</div>
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-value">${stats.players}</div>
+            <div class="stat-label">Players Online</div>
         </div>
-        <div class="rs-stat">
-            <div class="rs-stat-value">${stats.accounts}</div>
-            <div class="rs-stat-label">Registered Players</div>
+        <div class="stat">
+            <div class="stat-value">${stats.accounts}</div>
+            <div class="stat-label">Registered Players</div>
         </div>
     </div>
 
-    <div class="rs-features">
-        <div class="rs-feature">
-            <h3>25x XP Rate</h3>
+    <div class="features">
+        <div class="feature">
+            <h3>⚡ 25x XP Rate</h3>
             <p>Level up faster than ever. Perfect for bot training experiments.</p>
         </div>
-        <div class="rs-feature">
-            <h3>Bot-Friendly</h3>
+        <div class="feature">
+            <h3>🤖 Bot-Friendly</h3>
             <p>Full SDK support for automation. Train your AI agents!</p>
         </div>
-        <div class="rs-feature">
-            <h3>2004 Authentic</h3>
+        <div class="feature">
+            <h3>🎮 2004 Authentic</h3>
             <p>Experience RuneScape as it was in 2004. Nostalgia included.</p>
         </div>
-        <div class="rs-feature">
-            <h3>Members Content</h3>
+        <div class="feature">
+            <h3>👥 Members Content</h3>
             <p>All members areas and skills unlocked for everyone.</p>
         </div>
     </div>
 
-    <div class="rs-section-header"><h2>Quick Start</h2></div>
-    <div class="rs-section-body">
+    <div class="card">
+        <h2>🚀 Quick Start</h2>
         <p>1. <a href="/register">Register an account</a> or create one when you first log in</p>
         <p>2. <a href="/rs2.cgi">Launch the game client</a></p>
         <p>3. Enter your username and password</p>
         <p>4. Start your adventure!</p>
     </div>
 
-    <div class="rs-section-header"><h2>For Bot Developers</h2></div>
-    <div class="rs-section-body">
+    <div class="card">
+        <h2>🤖 For Bot Developers</h2>
         <p>Clone the SDK and start automating:</p>
         <pre>git clone ${GITHUB_URL}.git
 cd rs-sdk && bun install
 bun scripts/create-bot.ts mybot
 bun bots/mybot/script.ts</pre>
-        <p style="margin-top: 8px;">
-            <a href="${GITHUB_URL}">View SDK Documentation &gt;&gt;</a>
+        <p style="margin-top: 15px;">
+            <a href="${GITHUB_URL}">View SDK Documentation →</a>
         </p>
     </div>
     `;
 
-    return new Response(rsLayout('Home', content, 'home'), {
+    return new Response(layout('Home', content, 'home'), {
         headers: { 'Content-Type': 'text/html' }
     });
 }
@@ -142,40 +143,38 @@ export async function handleRegisterPage(req: Request, url: URL): Promise<Respon
     }
 
     const content = `
-    <div class="rs-panel" style="max-width: 450px; margin: 0 auto;">
-        <div class="rs-panel-header"><h2>Create Account</h2></div>
-        <div class="rs-panel-body">
-            ${error ? `<div class="rs-error">${error}</div>` : ''}
-            ${success ? `<div class="rs-success">${success}</div>` : ''}
+    <div class="card" style="max-width: 500px; margin: 0 auto;">
+        <h2>📝 Create Account</h2>
+        ${error ? `<p class="error">❌ ${error}</p>` : ''}
+        ${success ? `<p class="success">✅ ${success}</p>` : ''}
 
-            <form method="POST" action="/register" class="rs-form">
-                <div class="rs-form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" name="username" required
-                           minlength="1" maxlength="12" pattern="[a-zA-Z0-9_]+"
-                           placeholder="Enter username (1-12 chars)">
-                </div>
-                <div class="rs-form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required
-                           minlength="4" placeholder="Enter password (min 4 chars)">
-                </div>
-                <div class="rs-form-group">
-                    <label for="confirm">Confirm Password</label>
-                    <input type="password" id="confirm" name="confirm" required
-                           placeholder="Confirm your password">
-                </div>
-                <button type="submit" class="rs-btn rs-btn-gold" style="width: 100%;">Create Account</button>
-            </form>
+        <form method="POST" action="/register">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required
+                       minlength="1" maxlength="12" pattern="[a-zA-Z0-9_]+"
+                       placeholder="Enter username (1-12 chars)">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required
+                       minlength="4" placeholder="Enter password (min 4 chars)">
+            </div>
+            <div class="form-group">
+                <label for="confirm">Confirm Password</label>
+                <input type="password" id="confirm" name="confirm" required
+                       placeholder="Confirm your password">
+            </div>
+            <button type="submit" class="btn" style="width: 100%;">Create Account</button>
+        </form>
 
-            <p style="text-align: center; margin-top: 20px; color: #a09070;">
-                Already have an account? <a href="/rs2.cgi">Play Now</a>
-            </p>
-        </div>
+        <p style="text-align: center; margin-top: 20px; color: #999;">
+            Already have an account? <a href="/rs2.cgi">Play Now</a>
+        </p>
     </div>
     `;
 
-    return new Response(rsLayout('Register', content, 'register'), {
+    return new Response(layout('Register', content, 'register'), {
         headers: { 'Content-Type': 'text/html' }
     });
 }

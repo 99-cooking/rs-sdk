@@ -2,7 +2,7 @@ import { db } from '#/db/query.js';
 import Environment from '#/util/Environment.js';
 import { tryParseInt } from '#/util/TryParse.js';
 import { escapeHtml, SKILL_NAMES, ENABLED_SKILLS } from '../utils.js';
-import { rsLayout } from './layout.js';
+import { layout } from './layout.js';
 
 const hiddenNames = Environment.HISCORES_HIDDEN_NAMES;
 
@@ -22,27 +22,116 @@ function formatPlaytime(ticks: number): string {
     return `${minutes}m`;
 }
 
-// Build the skill sidebar HTML
-function buildSkillSidebar(profile: string, activeCategory: number): string {
-    const skills = [
+const HISCORES_EXTRA_STYLES = `
+<style>
+    .hs-layout { display: flex; gap: 20px; }
+    .hs-sidebar { width: 180px; flex-shrink: 0; }
+    .hs-main { flex: 1; min-width: 0; }
+    .hs-skill-list { list-style: none; padding: 0; }
+    .hs-skill-list li { border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .hs-skill-list li:last-child { border-bottom: none; }
+    .hs-skill-list a {
+        display: block; padding: 8px 12px; color: #ccc;
+        text-decoration: none; font-size: 0.9em; transition: all 0.2s;
+    }
+    .hs-skill-list a:hover { color: #fff; background: rgba(255,255,255,0.05); }
+    .hs-skill-list a.active { color: #ffd700; background: rgba(255,215,0,0.1); font-weight: bold; }
+    .hs-skill-list .hs-special a { color: #ff9900; }
+    .hs-skill-list .hs-special a:hover { color: #ffbb44; }
+    .hs-skill-list .hs-special a.active { color: #ffd700; }
+
+    .hs-table { width: 100%; border-collapse: collapse; }
+    .hs-table th {
+        color: #ffd700; font-size: 0.85em; font-weight: bold;
+        text-transform: uppercase; letter-spacing: 0.5px;
+        padding: 10px 12px; border-bottom: 2px solid rgba(255,215,0,0.3);
+        text-align: left;
+    }
+    .hs-table th.right { text-align: right; }
+    .hs-table td {
+        padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.05);
+        color: #ddd; font-size: 0.95em;
+    }
+    .hs-table td.right { text-align: right; }
+    .hs-table td a { color: #4a9eff; }
+    .hs-table td a:hover { color: #7db9ff; }
+    .hs-table tr:hover td { background: rgba(255,255,255,0.03); }
+
+    .hs-search-row { display: flex; gap: 15px; margin-top: 20px; }
+    .hs-search-box {
+        flex: 1; background: rgba(255,255,255,0.05); border-radius: 8px;
+        padding: 15px; text-align: center;
+    }
+    .hs-search-box b {
+        display: block; color: #ffd700; margin-bottom: 8px;
+        font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .hs-search-box input[type="text"],
+    .hs-search-box input[type="number"] {
+        padding: 8px 12px; border: 2px solid rgba(255,255,255,0.2);
+        border-radius: 6px; background: rgba(0,0,0,0.3);
+        color: white; font-size: 0.9em; width: 120px;
+    }
+    .hs-search-box input:focus { outline: none; border-color: #4a9eff; }
+    .hs-search-box input[type="submit"] {
+        padding: 8px 18px; background: linear-gradient(180deg, #4a9eff 0%, #0066cc 100%);
+        border: none; border-radius: 6px; color: white; cursor: pointer;
+        font-weight: bold; font-size: 0.85em; margin-top: 5px;
+    }
+    .hs-search-box input[type="submit"]:hover {
+        background: linear-gradient(180deg, #5aafff 0%, #1177dd 100%);
+    }
+    .hs-search-box form { max-width: none; margin: 0; }
+
+    .hs-search-result {
+        background: rgba(255,255,255,0.05); border-radius: 8px;
+        padding: 12px; text-align: center; margin-top: 15px;
+        color: #ddd; font-size: 0.95em;
+    }
+
+    .hs-profile-select {
+        text-align: center; margin-bottom: 20px;
+    }
+    .hs-profile-select select {
+        padding: 8px 12px; border: 2px solid rgba(255,255,255,0.2);
+        border-radius: 6px; background: rgba(0,0,0,0.3);
+        color: white; font-size: 0.9em;
+    }
+    .hs-profile-select form { max-width: none; margin: 0; display: inline; }
+
+    canvas.item-icon { image-rendering: pixelated; vertical-align: middle; }
+    .text-orange { color: #ff9900; }
+    .text-gold { color: #ffd700; }
+
+    @media (max-width: 768px) {
+        .hs-layout { flex-direction: column; }
+        .hs-sidebar { width: 100%; }
+        .hs-search-row { flex-direction: column; }
+    }
+</style>
+`;
+
+function skillSidebar(currentCategory: number, profile: string): string {
+    const skillOptions = [
         { id: 0, name: 'Overall' },
         ...ENABLED_SKILLS.map(s => ({ id: s.id + 1, name: s.name }))
     ];
 
-    const items = skills.map(s =>
-        `<li><a href="/hiscores?category=${s.id}&profile=${profile}"${s.id === activeCategory ? ' class="active"' : ''}>${s.name}</a></li>`
+    const links = skillOptions.map(s =>
+        `<li><a href="/hiscores?category=${s.id}&profile=${profile}"${s.id === currentCategory ? ' class="active"' : ''}>${s.name}</a></li>`
     ).join('\n');
 
     return `
-    <div class="rs-panel">
-        <div class="rs-panel-header"><h2>Skills</h2></div>
-        <div class="rs-panel-body" style="padding: 5px 0;">
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <div style="padding: 12px 15px; background: rgba(255,215,0,0.1); border-bottom: 1px solid rgba(255,215,0,0.2);">
+                <h3 style="color: #ffd700; font-size: 0.95em; margin: 0;">Skills</h3>
+            </div>
             <ul class="hs-skill-list">
-                ${items}
-                <li class="hs-special"><a href="/hiscores/outfit?profile=${profile}">Equipment</a></li>
+                ${links}
+                <li class="hs-special"><a href="/hiscores/outfit?profile=${profile}">⚔️ Equipment</a></li>
             </ul>
         </div>
-    </div>`;
+    `;
 }
 
 // Player profile page
@@ -64,8 +153,8 @@ export async function handleHiscoresPlayerPage(url: URL): Promise<Response | nul
     ).executeTakeFirst();
 
     if (!account) {
-        const content = `<div class="rs-panel"><div class="rs-panel-body" style="text-align:center;">Player "${escapeHtml(username)}" not found.</div></div>`;
-        return new Response(rsLayout('Player Not Found', content, 'hiscores'), {
+        const content = `<div class="card" style="text-align:center;"><p>Player "${escapeHtml(username)}" not found.</p><p><a href="/hiscores">← Back to Hiscores</a></p></div>`;
+        return new Response(layout('Player Not Found', HISCORES_EXTRA_STYLES + content, 'hiscores'), {
             status: 404, headers: { 'Content-Type': 'text/html' }
         });
     }
@@ -108,14 +197,14 @@ export async function handleHiscoresPlayerPage(url: URL): Promise<Response | nul
         .where('profile', '=', profile)
         .execute();
 
-    // Build skill rows
     let skillRows = `
         <tr>
             <td><a href="/hiscores?category=0&profile=${profile}">Overall</a></td>
             <td class="right">${overallRank}</td>
             <td class="right">${overallStats ? overallStats.level.toLocaleString() : '-'}</td>
             <td class="right">${overallStats ? formatPlaytime(overallStats.playtime) : '-'}</td>
-        </tr>`;
+        </tr>
+    `;
 
     for (const skill of ENABLED_SKILLS) {
         const stat = skillStats.find(s => s.type === skill.id + 1);
@@ -147,35 +236,52 @@ export async function handleHiscoresPlayerPage(url: URL): Promise<Response | nul
                 <td class="right">${rank}</td>
                 <td class="right">${stat ? stat.level.toLocaleString() : '-'}</td>
                 <td class="right">${stat ? formatPlaytime(stat.playtime) : '-'}</td>
-            </tr>`;
+            </tr>
+        `;
     }
 
     const content = `
-    <div class="rs-panel" style="max-width: 600px; margin: 0 auto;">
-        <div class="rs-panel-header">
-            <h2>Hiscores for ${escapeHtml(account.username)}</h2>
-        </div>
-        <div class="rs-panel-body">
-            <div style="text-align:center; margin-bottom: 15px;">
-                <a href="/hiscores?profile=${profile}">← Back to All Hiscores</a>
-            </div>
-            <table class="hs-profile-table">
+    ${HISCORES_EXTRA_STYLES}
+    <div style="text-align:center; margin-bottom: 20px;">
+        <h2 style="color: #ffd700; font-size: 1.5em;">📊 ${escapeHtml(account.username)}</h2>
+        <p style="color: #999;">Player Profile</p>
+    </div>
+
+    <div class="hs-profile-select">
+        <form method="GET" action="/hiscores/player/${encodeURIComponent(account.username)}">
+            <select name="profile" onchange="this.form.submit()">
+                <option value="main"${profile === 'main' ? ' selected' : ''}>Main</option>
+            </select>
+        </form>
+    </div>
+
+    <div class="card" style="padding: 0; overflow: hidden;">
+        <table class="hs-table">
+            <thead>
                 <tr>
                     <th>Skill</th>
                     <th class="right">Rank</th>
                     <th class="right">Level</th>
                     <th class="right">Time</th>
                 </tr>
+            </thead>
+            <tbody>
                 ${skillRows}
-            </table>
-        </div>
-    </div>`;
+            </tbody>
+        </table>
+    </div>
 
-    return new Response(rsLayout(`Hiscores - ${escapeHtml(account.username)}`, content, 'hiscores'), {
+    <div style="text-align: center;">
+        <a href="/hiscores?profile=${profile}" class="btn" style="padding: 10px 30px; font-size: 1em;">← Back to Hiscores</a>
+    </div>
+    `;
+
+    return new Response(layout(`Hiscores - ${escapeHtml(account.username)}`, content, 'hiscores'), {
         headers: { 'Content-Type': 'text/html' }
     });
 }
 
+// Main hiscores page
 export async function handleHiscoresPage(url: URL): Promise<Response | null> {
     if (!/^\/hi(?:gh)?scores\/?$/.test(url.pathname)) return null;
 
@@ -254,63 +360,83 @@ export async function handleHiscoresPage(url: URL): Promise<Response | null> {
             <td><a href="/hiscores/player/${encodeURIComponent(r.username)}?profile=${profile}">${escapeHtml(r.username)}</a></td>
             <td class="right">${r.level.toLocaleString()}</td>
             <td class="right">${formatPlaytime(r.playtime)}</td>
-        </tr>`).join('');
+        </tr>
+    `).join('');
 
     const content = `
+    ${HISCORES_EXTRA_STYLES}
+    <div style="text-align:center; margin-bottom: 20px;">
+        <h2 style="color: #ffd700; font-size: 1.5em;">🏆 ${selectedSkill} Hiscores</h2>
+    </div>
+
+    <div class="hs-profile-select">
+        <form id="profile-select-form" method="GET" action="/hiscores">
+            <input type="hidden" name="category" value="${currentCategory}">
+            <select name="profile" onchange="this.form.submit()">
+                <option value="main"${profile === 'main' ? ' selected' : ''}>Main</option>
+            </select>
+        </form>
+    </div>
+
     <div class="hs-layout">
         <div class="hs-sidebar">
-            ${buildSkillSidebar(profile, currentCategory)}
+            ${skillSidebar(currentCategory, profile)}
         </div>
         <div class="hs-main">
-            <div class="rs-panel">
-                <div class="rs-panel-header"><h2>${selectedSkill} Hiscores</h2></div>
-                <div class="rs-panel-body">
-                    ${rows.length > 0 ? `
-                    <table class="hs-table">
+            <div class="card" style="padding: 0; overflow: hidden;">
+                ${rows.length > 0 ? `
+                <table class="hs-table">
+                    <thead>
                         <tr>
                             <th class="right">Rank</th>
                             <th>Name</th>
                             <th class="right">Level</th>
                             <th class="right">Time</th>
                         </tr>
+                    </thead>
+                    <tbody>
                         ${tableRows}
-                    </table>` : '<p style="text-align:center;">No players found</p>'}
+                    </tbody>
+                </table>
+                ` : '<div style="padding: 30px; text-align: center; color: #999;">No players found</div>'}
+            </div>
 
-                    <div class="hs-search-row">
-                        <div class="hs-search-box">
-                            <form action="/hiscores">
-                                <b>Search by rank</b>
-                                <input type="number" maxlength="12" size="12" name="rank" value="">
-                                <input type="hidden" name="category" value="${currentCategory}">
-                                <input type="hidden" name="profile" value="${profile}">
-                                <br><input type="submit" value="Search">
-                            </form>
-                        </div>
-                        <div class="hs-search-box">
-                            <form action="/hiscores" autocomplete="off">
-                                <b>Search by name</b>
-                                <input type="text" maxlength="12" size="12" name="player" value="${escapeHtml(playerSearch)}" autocomplete="off">
-                                <input type="hidden" name="category" value="${currentCategory}">
-                                <input type="hidden" name="profile" value="${profile}">
-                                <br><input type="submit" value="Search">
-                            </form>
-                        </div>
-                    </div>
-
-                    ${searchedPlayer ? `
-                    <div class="hs-search-result">
-                        Rank: ${searchedPlayer.rank} |
-                        <a href="/hiscores/player/${encodeURIComponent(searchedPlayer.username)}?profile=${profile}">${escapeHtml(searchedPlayer.username)}</a> |
-                        Level: ${searchedPlayer.level.toLocaleString()} |
-                        Time: ${formatPlaytime(searchedPlayer.playtime)}
-                    </div>` : playerSearch ? `
-                    <div class="hs-search-result">Player "${escapeHtml(playerSearch)}" not found.</div>` : ''}
+            <div class="hs-search-row">
+                <div class="hs-search-box">
+                    <form action="/hiscores">
+                        <b>Search by Rank</b>
+                        <input type="number" maxlength="12" size="12" name="rank" value="">
+                        <input type="hidden" name="category" value="${currentCategory}">
+                        <input type="hidden" name="profile" value="${profile}">
+                        <br><input type="submit" value="Search">
+                    </form>
+                </div>
+                <div class="hs-search-box">
+                    <form action="/hiscores" autocomplete="off">
+                        <b>Search by Name</b>
+                        <input type="text" maxlength="12" size="12" name="player" value="${escapeHtml(playerSearch)}" autocomplete="off">
+                        <input type="hidden" name="category" value="${currentCategory}">
+                        <input type="hidden" name="profile" value="${profile}">
+                        <br><input type="submit" value="Search">
+                    </form>
                 </div>
             </div>
-        </div>
-    </div>`;
 
-    return new Response(rsLayout(`${selectedSkill} Hiscores`, content, 'hiscores'), {
+            ${searchedPlayer ? `
+            <div class="hs-search-result">
+                <strong>Rank ${searchedPlayer.rank}</strong> &mdash;
+                <a href="/hiscores/player/${encodeURIComponent(searchedPlayer.username)}?profile=${profile}">${escapeHtml(searchedPlayer.username)}</a> &mdash;
+                Level: ${searchedPlayer.level.toLocaleString()} &mdash;
+                Time: ${formatPlaytime(searchedPlayer.playtime)}
+            </div>
+            ` : playerSearch ? `
+            <div class="hs-search-result">Player "${escapeHtml(playerSearch)}" not found.</div>
+            ` : ''}
+        </div>
+    </div>
+    `;
+
+    return new Response(layout(`${selectedSkill} Hiscores`, content, 'hiscores'), {
         headers: { 'Content-Type': 'text/html' }
     });
 }
@@ -342,7 +468,7 @@ export async function handleHiscoresOutfitPage(url: URL): Promise<Response | nul
             const items = JSON.parse(r.items) as { id?: number; name: string; value: number }[];
             itemsList = items.map(item => {
                 if (item.id != null) {
-                    return `<canvas class="item-icon" data-item-id="${item.id}" title="${escapeHtml(item.name)} (${item.value.toLocaleString()} gp)" width="32" height="32" style="image-rendering:pixelated;vertical-align:middle"></canvas>`;
+                    return `<canvas class="item-icon" data-item-id="${item.id}" title="${escapeHtml(item.name)} (${item.value.toLocaleString()} gp)" width="32" height="32"></canvas>`;
                 }
                 return `<span title="${item.value.toLocaleString()} gp">${escapeHtml(item.name)}</span>`;
             }).join(' ');
@@ -353,35 +479,44 @@ export async function handleHiscoresOutfitPage(url: URL): Promise<Response | nul
             <tr>
                 <td class="right">${i + 1}</td>
                 <td><a href="/hiscores/player/${encodeURIComponent(r.username)}?profile=${profile}">${escapeHtml(r.username)}</a></td>
-                <td class="right yellow" title="${r.value.toLocaleString()} gp">${formatGold(r.value)}</td>
-                <td style="font-size:11px">${itemsList}</td>
-            </tr>`;
+                <td class="right text-gold" title="${r.value.toLocaleString()} gp">${formatGold(r.value)}</td>
+                <td style="font-size:0.85em">${itemsList}</td>
+            </tr>
+        `;
     }).join('');
 
     const content = `
+    ${HISCORES_EXTRA_STYLES}
+    <div style="text-align:center; margin-bottom: 20px;">
+        <h2 style="color: #ffd700; font-size: 1.5em;">⚔️ Equipment Hiscores</h2>
+    </div>
+
     <div class="hs-layout">
         <div class="hs-sidebar">
-            ${buildSkillSidebar(profile, -1)}
+            ${skillSidebar(-1, profile)}
         </div>
         <div class="hs-main">
-            <div class="rs-panel">
-                <div class="rs-panel-header"><h2>Equipment Hiscores</h2></div>
-                <div class="rs-panel-body">
-                    ${results.length > 0 ? `
-                    <table class="hs-table">
+            <div class="card" style="padding: 0; overflow: hidden;">
+                ${results.length > 0 ? `
+                <table class="hs-table">
+                    <thead>
                         <tr>
                             <th class="right">#</th>
                             <th>Name</th>
                             <th class="right">Value</th>
                             <th>Items</th>
                         </tr>
+                    </thead>
+                    <tbody>
                         ${tableRows}
-                    </table>` : '<p style="text-align:center;">No outfit data found</p>'}
-                </div>
+                    </tbody>
+                </table>
+                ` : '<div style="padding: 30px; text-align: center; color: #999;">No outfit data found</div>'}
             </div>
         </div>
     </div>
-    <!-- Hidden canvas required by viewer internals -->
+
+    <!-- Hidden canvas for viewer -->
     <canvas id="canvas" width="256" height="256" style="display:none"></canvas>
     <script type="module">
         import { ItemViewer } from '/viewer/viewer.js';
@@ -417,9 +552,10 @@ export async function handleHiscoresOutfitPage(url: URL): Promise<Response | nul
                 }
             }
         }
-    </script>`;
+    </script>
+    `;
 
-    return new Response(rsLayout('Equipment Hiscores', content, 'hiscores'), {
+    return new Response(layout('Equipment Hiscores', content, 'hiscores'), {
         headers: { 'Content-Type': 'text/html' }
     });
 }
