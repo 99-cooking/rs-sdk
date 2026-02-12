@@ -13,9 +13,9 @@ function formatGold(value: number): string {
     return value.toLocaleString();
 }
 
-// Format playtime (in game ticks, 0.6s each)
+// Format playtime (in game ticks, 0.3s each at 2x speed)
 function formatPlaytime(ticks: number): string {
-    const totalSeconds = Math.floor(ticks * 0.6);
+    const totalSeconds = Math.floor(ticks * 0.3);
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     if (hours > 0) return `${hours}h ${minutes}m`;
